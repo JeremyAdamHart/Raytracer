@@ -20,13 +20,13 @@ vec3 phongLighting(RayIntersection rayIntersect, Scene *scene) {
 		vec3 light = normalize(scene->lights[l].pos - rayIntersect.position);
 		Ray refLight = reflectRay(Ray(scene->lights[l].pos, -light), rayIntersect.position, normal);
 
-		vec3 diffuse = shading.kd*dot(normal, light)*shading.color;
-		vec3 specular = shading.ks*pow(dot(viewer, refLight.dir), shading.n)*shading.color;
+		vec3 diffuse = shading.kd*clamp(dot(normal, light), 0.f, 1.f)*shading.color;
+		vec3 specular = shading.ks*pow(clamp(dot(viewer, refLight.dir), 0.f, 1.f), shading.n)*shading.color;
 
 		color += diffuse + specular;
 
 	}
-
+	
 	return color;
 }
 
@@ -46,7 +46,7 @@ void Raytracer::renderScene(float fov, float nearPlane, Scene *scene) {
 			glm::vec3 rayOrigin = topLeftLocation + vec3(float(i)*pixelWidth, -float(j)*pixelWidth, 0.f);
 			Ray ray = Ray(rayOrigin, normalize(rayOrigin));
 
-			vector<RayIntersection> intersectionList = intersect(ray, scene, 1);
+			vector<RayIntersection> intersectionList = intersect(ray, scene, 2);
 			vec3 color = vec3(0.f);
 			float rayContribution = 1.f;
 			for (int k = 0; k < intersectionList.size(); k++) {

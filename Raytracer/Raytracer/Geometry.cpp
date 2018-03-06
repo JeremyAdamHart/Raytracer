@@ -81,7 +81,7 @@ bool RayIntersection::operator<(RayIntersection ray) {
 
 
 Ray reflectRay(Ray ray, vec3 pos, vec3 normal) {
-	vec3 newDir = dot(-ray.dir, normal)*normal*2.f - ray.dir;
+	vec3 newDir = -dot(ray.dir, normal)*normal*2.f + ray.dir;
 
 	return Ray(pos, newDir);
 }

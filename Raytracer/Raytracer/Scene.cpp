@@ -5,6 +5,8 @@
 using namespace glm;
 using namespace std;
 
+const float INTERSECTION_OFFSET = 0.0001f;
+
 vector<RayIntersection> intersect(Ray ray, Scene *scene, int maxIntersections) {
 	vector<RayIntersection> intersectionList;
 	
@@ -39,10 +41,10 @@ vector<RayIntersection> intersect(Ray ray, Scene *scene, int maxIntersections) {
 		else {
 			//Push back closest intersection
 			intersectionList.push_back(*(min_element(currentIntersections.begin(), currentIntersections.end())));
-
+			vec3 normal = intersectionList.back().object->getNormal(intersectionList.back().position);
 			currentRay = reflectRay(	currentRay,
-										intersectionList.back().position,
-										intersectionList.back().object->getNormal(intersectionList.back().position));
+										intersectionList.back().position + normal*INTERSECTION_OFFSET,
+										normal);
 
 		}
 	}
