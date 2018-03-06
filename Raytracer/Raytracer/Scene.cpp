@@ -5,7 +5,7 @@
 using namespace glm;
 using namespace std;
 
-const float INTERSECTION_OFFSET = 0.0001f;
+const float INTERSECTION_OFFSET = 0.001f;
 
 vector<RayIntersection> intersect(Ray ray, Scene *scene, int maxIntersections) {
 	vector<RayIntersection> intersectionList;
@@ -17,21 +17,21 @@ vector<RayIntersection> intersect(Ray ray, Scene *scene, int maxIntersections) {
 
 		//Test triangle intersections
 		for (int i = 0; i < scene->triangles.size(); i++) {
-			RayIntersection intersection = intersect(ray, &scene->triangles[i]);
+			RayIntersection intersection = intersect(currentRay, &scene->triangles[i]);
 			if (intersection.intersected)
 				currentIntersections.push_back(intersection);
 		}
 
 		//Test sphere intersections
 		for (int i = 0; i < scene->spheres.size(); i++) {
-			RayIntersection intersection = intersect(ray, &scene->spheres[i]);
+			RayIntersection intersection = intersect(currentRay, &scene->spheres[i]);
 			if (intersection.intersected)
 				currentIntersections.push_back(intersection);
 		}
 
 		//Test plane intersections
 		for (int i = 0; i < scene->planes.size(); i++) {
-			RayIntersection intersection = intersect(ray, &scene->planes[i]);
+			RayIntersection intersection = intersect(currentRay, &scene->planes[i]);
 			if (intersection.intersected)
 				currentIntersections.push_back(intersection);
 		}
@@ -45,7 +45,6 @@ vector<RayIntersection> intersect(Ray ray, Scene *scene, int maxIntersections) {
 			currentRay = reflectRay(	currentRay,
 										intersectionList.back().position + normal*INTERSECTION_OFFSET,
 										normal);
-
 		}
 	}
 

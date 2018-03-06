@@ -38,8 +38,11 @@ RayIntersection intersect(Ray ray, Sphere *sphere) {
 		return intersection;
 	}
 
-	float t1 = (-b - sqrt(b*b - 4.f * a*c)) / (2.f * a);
-	float t2 = (-b + sqrt(b*b - 4.f * a*c)) / (2.f * a);
+	float t1 = (-b - sqrt(discriminant)) / (2.f * a);
+	float t2 = (-b + sqrt(discriminant)) / (2.f * a);
+
+	if (t2 < 0)
+		return intersection;
 
 	intersection.intersected = true;
 	intersection.t = (t1 > 0) ? t1 : t2;

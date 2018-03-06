@@ -15,7 +15,7 @@ int main() {
 	ShadingInfo red(0.4, 0.5, 0.4, 10, vec3(1, 0, 0), 0.5f);
 	ShadingInfo blue(0.4, 0.5, 0.4, 10, vec3(0, 0, 1), 0.5f);
 
-	vec3 offset(1.f, 0.f, -0.5f);
+	vec3 offset(1.f, 0.f, 1.5f);
 
 	scene.triangles.push_back(Triangle(
 		vec3(-0.5f, -0.5f, 2.f) + offset, 
