@@ -3,6 +3,14 @@
 #include <glm/glm.hpp>
 #include <memory>
 
+class Scene;
+
+class SceneObject {
+	const Scene *parentScene;
+
+
+};
+
 class ShadingInfo{
 public:
 	float ka, kd, ks, n;

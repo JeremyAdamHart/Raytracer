@@ -72,7 +72,21 @@ RayIntersection intersect(Ray ray, Triangle *triangle) {
 RayIntersection intersect(Ray ray, Plane *plane) {
 	RayIntersection intersection;
 
+	float denominator = dot(ray.dir, plane->normal);
+	if (abs(denominator) < 0.00001)
+		return intersection;
 
+	float t = -dot((ray.origin - plane->origin), plane->normal) 
+		/ denominator;
+
+	if (t < 0)
+		return intersection;
+
+	intersection.intersected = true;
+	intersection.t = t;
+	intersection.position = ray.origin + ray.dir*intersection.t;
+	intersection.object = plane;
+	intersection.ray = ray;
 
 	return intersection;
 }
