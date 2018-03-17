@@ -66,7 +66,7 @@ public:
 	glm::vec3 origin, dir;
 
 	Ray() :origin(0.f), dir(0.f) {}
-	Ray(glm::vec3 origin, glm::vec3 dir) :origin(origin), dir(dir) {}
+	Ray(glm::vec3 origin, glm::vec3 dir) :origin(origin), dir(normalize(dir)) {}
 };
 
 Ray reflectRay(Ray ray, glm::vec3 pos, glm::vec3 normal);
