@@ -14,6 +14,13 @@ public:
 	PixelRay(Ray ray, int x, int y) : x(x), y(y), ray(ray) {}
 };
 
+struct Camera {
+	glm::vec3 cx, cy, cz;
+	glm::vec3 origin;
+
+	Camera();
+	Camera(glm::vec3 origin, glm::vec3 dir, glm::vec3 up=glm::vec3(0, 1, 0));
+};
 
 
 class Raytracer{
@@ -23,6 +30,6 @@ class Raytracer{
 public:
 	Raytracer(int width=0, int height=0);
 
-	void renderScene(float fov, float nearPlane, Scene *scene);
+	void renderScene(Camera cam, float fov, float nearPlane, Scene *scene, int maxBounces);
 	PixelRay generateRay(int x, int y);
 };

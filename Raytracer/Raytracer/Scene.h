@@ -1,21 +1,32 @@
 #pragma once
 
-#include "Geometry.h"
 #include <vector>
+#include <memory>
+#include <limits>
 
-class Light {
-public:
-	glm::vec3 pos;
+#include "Light.h"
+#include "Geometry.h"
+#include "Shader.h"
 
-	Light(glm::vec3 pos) :pos(pos) {}
-};
 
 class Scene {
 public:
-	std::vector<Light> lights;
-	std::vector<Triangle> triangles;
-	std::vector<Sphere> spheres;
-	std::vector<Plane> planes;
+	std::vector<std::shared_ptr<Light>> lights;
+	std::vector<SceneGeometry<Triangle>> triangles;
+	std::vector<SceneGeometry<Sphere>> spheres;
+	std::vector<SceneGeometry<Plane>> planes;
+	float ambient;
+	glm::vec3 backgroundColor;
+
+	Scene(float ambient = 0.3f, glm::vec3 backgroundColor = glm::vec3(0.f)) 
+		:ambient(ambient), backgroundColor(backgroundColor) {}
+
+	void add(std::shared_ptr<Light> light);
+	void add(SceneTriangle triangle);
+	void add(SceneSphere sphere);
+	void add(ScenePlane plane);
+
 };
 
-std::vector<RayIntersection> intersect(Ray ray, Scene *scene, int maxIntersections);
+RayIntersection intersect(Ray ray, const Scene *scene);
+bool shadowIntersect(Ray ray, const Scene *scene, float lightDist = std::numeric_limits<float>::max());

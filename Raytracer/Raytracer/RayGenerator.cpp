@@ -4,33 +4,19 @@
 using namespace glm;
 using namespace std;
 
+Camera::Camera() :origin(vec3(0.f)), cx(vec3(1, 0, 0)), cy(vec3(0, 1, 0)), cz(vec3(0, 0, 1)) {}
+
+Camera::Camera(vec3 origin, vec3 dir, vec3 up) : origin(origin), cz(normalize(vec3(-dir))) {
+	cx = normalize(cross(dir, up));
+	cy = normalize(cross(cx, dir));
+}
+
 Raytracer::Raytracer(int width, int height) :width(width), height(height), pixels(width*height){
 
 }
 
-vec3 phongLighting(RayIntersection rayIntersect, Scene *scene) {
-	Ray& ray = rayIntersect.ray;
-	ShadingInfo& shading = rayIntersect.object->shading;
-	vec3 normal = rayIntersect.object->getNormal(rayIntersect.position);
-	vec3 viewer = -normalize(rayIntersect.position);
-	
-	vec3 color = shading.ka *shading.color;
 
-	for (int l = 0; l < scene->lights.size(); l++) {
-		vec3 light = normalize(scene->lights[l].pos - rayIntersect.position);
-		Ray refLight = reflectRay(Ray(scene->lights[l].pos, -light), rayIntersect.position, normal);
-
-		vec3 diffuse = shading.kd*clamp(dot(normal, light), 0.f, 1.f)*shading.color;
-		vec3 specular = shading.ks*pow(clamp(dot(viewer, refLight.dir), 0.f, 1.f), shading.n)*shading.color;
-
-		color += diffuse + specular;
-
-	}
-	
-	return color;
-}
-
-void Raytracer::renderScene(float fov, float nearPlane, Scene *scene) {
+void Raytracer::renderScene(Camera cam, float fov, float nearPlane, Scene *scene, int maxBounces) {
 
 	//Establish view plane
 	float planeWidth = 2.f*tan(fov*0.5f)*nearPlane;
@@ -39,21 +25,17 @@ void Raytracer::renderScene(float fov, float nearPlane, Scene *scene) {
 	float pixelWidth = planeWidth / float(width);
 	float pixelHeight = planeHeight / float(height);
 
-	vec3 topLeftLocation = vec3((-planeWidth - pixelWidth)*0.5f, (planeHeight - pixelHeight)*.5f, nearPlane);
+	vec3 topLeftLocation = vec3((-planeWidth - pixelWidth)*0.5f, (planeHeight - pixelHeight)*.5f, -nearPlane);
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			glm::vec3 rayOrigin = topLeftLocation + vec3(float(i)*pixelWidth, -float(j)*pixelWidth, 0.f);
-			Ray ray = Ray(rayOrigin, normalize(rayOrigin));
+			Ray ray = Ray(rayOrigin, normalize(rayOrigin), maxBounces-1);
 
-			vector<RayIntersection> intersectionList = intersect(ray, scene, 2);
-			vec3 color = vec3(0.f);
-			float rayContribution = 1.f;
-			for (int k = 0; k < intersectionList.size(); k++) {
-				float reflectivity = intersectionList[k].object->shading.reflectivity;
-				color += rayContribution*(1-reflectivity)*phongLighting(intersectionList[k], scene);
-				rayContribution *= reflectivity;
-			}
+			RayIntersection rayIntersect = intersect(ray, scene);
+			vec3 color = scene->backgroundColor;
+			if(rayIntersect.intersected)
+				color = rayIntersect.materialHit->calculateShading(rayIntersect, scene);
 
 			pixels[j*height + i] = color;
 
